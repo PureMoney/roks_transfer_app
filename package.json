@@ -1,5 +1,5 @@
 {
-  "name": "roks_transfer_app",
+  "name": "@bcabansay/roks_transfer_app",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -13,5 +13,14 @@
     "ethereumjs-tx": "^2.1.2",
     "web3": "^1.2.9",
     "web3-eth-contract": "^1.2.9"
-  }
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PureMoney/roks_transfer_app.git"
+  },
+  "bugs": {
+    "url": "https://github.com/PureMoney/roks_transfer_app/issues"
+  },
+  "homepage": "https://github.com/PureMoney/roks_transfer_app#readme"
 }
