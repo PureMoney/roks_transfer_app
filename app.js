@@ -1,12 +1,20 @@
 const http = require('http');
-const transfer = require('./transfer');
+
+const contract = require('./contract_abi');
+const CONTRACT_ABI = contract.contract;
+
 const properties = require('./properties');
+const HOST_NAME = properties.hostname;
+const HOST_PORT = properties.port;
+const CONTRACT_ADDRESS = properties.contract_address;
+const NETWORK_PROVIDER = properties.network_provider;
+const ROKS_SRC_ADDRESS = properties.roks_src_address;
+const ROKS_SRC_PRIV_KEY = properties.roks_src_priv_key;
+const GAS_LIMIT = properties.gas_limit;
+const NETWORK = properties.network;
 
-const hostname = properties.hostname;
-const port = properties.port;
-
-let web3 = null;
-let contract = null;
+const RoksTransfer = require('./transfer').RoksTransfer;
+const roksTransfer = new RoksTransfer(CONTRACT_ABI, NETWORK, NETWORK_PROVIDER, CONTRACT_ADDRESS, ROKS_SRC_ADDRESS, ROKS_SRC_PRIV_KEY, GAS_LIMIT);
 
 const server = http.createServer((req, res) => {
   let body = [];
@@ -19,18 +27,13 @@ const server = http.createServer((req, res) => {
   }).on('end', () => {
     body = JSON.parse(Buffer.concat(body).toString());
     const { recipient, amount } = body;
-    transfer.transfer(web3, contract, recipient, amount);
+    roksTransfer.transfer(recipient, amount);
   });
   res.statusCode = 200;
   res.end();
 });
 
-async function init(){
-  web3 = await transfer.setUpWeb3();
-  contract = await transfer.setupContract();
-}
-
-server.listen(port, hostname, () => {
-  init();
-  console.log(`Server running at http://${hostname}:${port}/`);
+server.listen(HOST_PORT, HOST_NAME, () => {
+  roksTransfer.init();
+  console.log(`Server running at http://${HOST_NAME}:${HOST_PORT}/`);
 });
