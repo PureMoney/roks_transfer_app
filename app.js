@@ -1,8 +1,9 @@
 const http = require('http');
 const transfer = require('./transfer');
+const properties = require('./properties');
 
-const hostname = '127.0.0.1';
-const port = 3000;
+const hostname = properties.hostname;
+const port = properties.port;
 
 let web3 = null;
 let contract = null;

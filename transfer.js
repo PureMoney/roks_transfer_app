@@ -1,23 +1,26 @@
 const Web3 = require('web3');
-var Tx = require('ethereumjs-tx').Transaction;
+const Tx = require('ethereumjs-tx').Transaction;
 const Web3EthContract = require('web3-eth-contract');
 
-// Change values here
 const contract = require('./contract_abi');
 const CONTRACT_ABI = contract.contract;
-const CONTRACT_ADDRESS = '0x89031D05bf46458d5E907AFAae91584e19C50FB9';
-const PRIVATE_KEY = 'AA7BE917A05F15FC70AA4ACBC3A3120372FD560A6D643BF09A614251C75DB9A7';
-const INFURA = 'infura websocket url here';
-const PREMINTED_ADDRESS = 'address of designated sender here';
 
-var privateKey = new Buffer(PRIVATE_KEY, 'hex');
+const properties = require('./properties');
+const CONTRACT_ADDRESS = properties.contract_address;
+const NETWORK_PROVIDER = properties.network_provider;
+const ROKS_SRC_ADDRESS = properties.roks_src_address;
+const ROKS_SRC_PRIV_KEY = properties.roks_src_priv_key;
+const GAS_LIMIT = properties.gas_limit;
+const NETWORK = properties.network;
+
+const privateKey = new Buffer(ROKS_SRC_PRIV_KEY, 'hex');
 
 async function setUpWeb3(){
-  return new Web3(INFURA);
+  return new Web3(NETWORK_PROVIDER);
 }
 
 async function setupContract(){
-  return new Web3EthContract(CONTRACT_ABI, CONTRACT_ADDRESS, {from: PREMINTED_ADDRESS});
+  return new Web3EthContract(CONTRACT_ABI, CONTRACT_ADDRESS, {from: ROKS_SRC_ADDRESS});
 }
 
 async function transfer(web3, contract, recipient, amount){
@@ -28,7 +31,7 @@ async function transfer(web3, contract, recipient, amount){
     contract = setupContract();
   }
 
-  const count = await web3.eth.getTransactionCount(PREMINTED_ADDRESS);
+  const count = await web3.eth.getTransactionCount(ROKS_SRC_ADDRESS);
   const nonce = web3.utils.toHex(count);
   const data = contract.methods.transfer(recipient, Web3.utils.toWei(amount.toString(), 'ether')).encodeABI();
 
@@ -39,13 +42,13 @@ async function transfer(web3, contract, recipient, amount){
   const txObj = {
     nonce,
     'gasPrice': web3.utils.toHex(gasPrice.toString()),
-    'gasLimit':  web3.utils.toHex('900000'),
+    'gasLimit':  web3.utils.toHex(GAS_LIMIT),
     "value": "0x00",
     "data": data,
     "to": CONTRACT_ADDRESS
   }
 
-  const tx = new Tx(txObj, {'chain':'ropsten'});
+  const tx = new Tx(txObj, {'chain':NETWORK});
   tx.sign(privateKey);
   const serializedTx = tx.serialize();
   web3.eth.sendSignedTransaction('0x' + serializedTx.toString('hex'))
