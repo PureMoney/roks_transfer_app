@@ -10,11 +10,17 @@ const CONTRACT_ADDRESS = properties.contract_address;
 const NETWORK_PROVIDER = properties.network_provider;
 const ROKS_SRC_ADDRESS = properties.roks_src_address;
 const ROKS_SRC_PRIV_KEY = properties.roks_src_priv_key;
-const GAS_LIMIT = properties.gas_limit;
+const ROKS_GAS_LIMIT = properties.roks_gas_limit;
 const NETWORK = properties.network;
 
-const RoksTransfer = require('./transfer').RoksTransfer;
-const roksTransfer = new RoksTransfer(CONTRACT_ABI, NETWORK, NETWORK_PROVIDER, CONTRACT_ADDRESS, ROKS_SRC_ADDRESS, ROKS_SRC_PRIV_KEY, GAS_LIMIT);
+const ETH_SRC_ADDRESS = properties.eth_src_address;
+const ETH_SRC_PRIV_KEY = properties.eth_src_priv_key;
+const ETH_GAS_LIMIT = properties.roks_gas_limit;
+
+const RoksTransfer = require('./roks_transfer').RoksTransfer;
+const EthTransfer = require('./eth_transfer').EthTransfer;
+const roksTransfer = new RoksTransfer(CONTRACT_ABI, NETWORK, NETWORK_PROVIDER, CONTRACT_ADDRESS, ROKS_SRC_ADDRESS, ROKS_SRC_PRIV_KEY, ROKS_GAS_LIMIT);
+const ethTransfer = new EthTransfer(NETWORK, NETWORK_PROVIDER, CONTRACT_ADDRESS, ETH_SRC_ADDRESS, ETH_SRC_PRIV_KEY, ETH_GAS_LIMIT);
 
 const server = http.createServer((req, res) => {
   let body = [];
@@ -26,8 +32,14 @@ const server = http.createServer((req, res) => {
     body.push(chunk);
   }).on('end', () => {
     body = JSON.parse(Buffer.concat(body).toString());
-    const { recipient, amount } = body;
-    roksTransfer.transfer(recipient, amount);
+    const { recipient, amount, tx_type } = body;
+    if (tx_type === 'roks') {
+      console.log('sending roks.....');
+      roksTransfer.transfer(recipient, amount);
+    } else if (tx_type === 'eth') {
+      console.log('sending eth.....');
+      ethTransfer.transfer(recipient, amount);
+    }
   });
   res.statusCode = 200;
   res.end();
@@ -35,5 +47,6 @@ const server = http.createServer((req, res) => {
 
 server.listen(HOST_PORT, HOST_NAME, () => {
   roksTransfer.init();
+  ethTransfer.init();
   console.log(`Server running at http://${HOST_NAME}:${HOST_PORT}/`);
 });
