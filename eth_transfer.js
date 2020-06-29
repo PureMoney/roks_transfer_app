@@ -1,4 +1,6 @@
 const Web3 = require('web3');
+const Web3HttpProvider = require('web3-providers-http');
+const { http_options } = require('./properties');
 const Tx = require('ethereumjs-tx').Transaction;
 
 class EthTransfer {
@@ -21,7 +23,7 @@ class EthTransfer {
   }
 
   async setUpWeb3(network_provider) {
-    return new Web3(network_provider);
+    return new Web3(new Web3HttpProvider(network_provider, http_options));
   }
 
   async transfer(recipient, amount) {

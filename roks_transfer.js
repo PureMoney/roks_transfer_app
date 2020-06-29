@@ -1,4 +1,6 @@
 const Web3 = require('web3');
+const Web3HttpProvider = require('web3-providers-http');
+const { http_options } = require('./properties');
 const Tx = require('ethereumjs-tx').Transaction;
 const Web3EthContract = require('web3-eth-contract');
 const contract = require('./contract_abi');
@@ -26,7 +28,7 @@ class RoksTransfer {
   }
 
   async setUpWeb3(network_provider){
-    return new Web3(network_provider);
+    return new Web3(new Web3HttpProvider(network_provider, http_options));
   }
 
   async setupContract(contract_abi, contract_address, roks_src_address){
