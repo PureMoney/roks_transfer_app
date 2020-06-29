@@ -23,26 +23,35 @@ const roksTransfer = new RoksTransfer(CONTRACT_ABI, NETWORK, NETWORK_PROVIDER, C
 const ethTransfer = new EthTransfer(NETWORK, NETWORK_PROVIDER, CONTRACT_ADDRESS, ETH_SRC_ADDRESS, ETH_SRC_PRIV_KEY, ETH_GAS_LIMIT);
 
 const server = http.createServer((req, res) => {
-  let body = [];
-  req.on('error', (err) => {
-    res.statusCode = 500;
-    res.end();
-    console.error(err);
-  }).on('data', (chunk) => {
-    body.push(chunk);
-  }).on('end', () => {
-    body = JSON.parse(Buffer.concat(body).toString());
-    const { recipient, amount, tx_type } = body;
-    if (tx_type === 'roks') {
-      console.log('sending roks.....');
-      roksTransfer.transfer(recipient, amount);
-    } else if (tx_type === 'eth') {
-      console.log('sending eth.....');
-      ethTransfer.transfer(recipient, amount);
-    }
-  });
-  res.statusCode = 200;
-  res.end();
+    let body = [];
+    req.on('error', (err) => {
+      res.statusCode = 500;
+      res.end();
+      console.error(err);
+    }).on('data', (chunk) => {
+      body.push(chunk);
+    }).on('end', async () => {
+      body = JSON.parse(Buffer.concat(body).toString());
+      const { recipient, amount, tx_type } = body;
+      if (tx_type === 'roks') {
+        console.log('sending roks.....');
+        const result = await roksTransfer.transfer(recipient, amount);
+        if (!result){
+          res.statusCode = 500;
+        } else {
+          res.statusCode = 200;
+        }
+      } else if (tx_type === 'eth') {
+        console.log('sending eth.....');
+        const result = await ethTransfer.transfer(recipient, amount);
+        if (!result){
+          res.statusCode = 500;
+        } else {
+          res.statusCode = 200;
+        }
+      }
+      res.end();
+    });
 });
 
 server.listen(HOST_PORT, HOST_NAME, () => {
