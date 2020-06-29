@@ -48,14 +48,17 @@ class EthTransfer {
     const tx = new Tx(txObj, { 'chain': this.network });
     tx.sign(this.private_key);
     const serializedTx = tx.serialize();
-    web3.eth.sendSignedTransaction('0x' + serializedTx.toString('hex'))
-      .once('transactionHash', function (hash) { console.log("Hash: ", hash) })
-      .once('receipt', function (receipt) { console.log("Receipt: ", receipt) })
-      .on('confirmation', function (confNumber, receipt) { console.log("Confirmation: ", receipt, " Confirmation Number: ", confNumber) })
-      .on('error', function (error) { console.log("Error: ", error) })
-      .then(function (receipt) {
-        console.log("Receipt: ", receipt);
-      });
+    return await new Promise(async (resolve, reject) => {
+      web3.eth.sendSignedTransaction('0x' + serializedTx.toString('hex'))
+        .once('receipt', function (receipt) {
+          console.log("Receipt: ", receipt);
+          resolve(true);
+        })
+        .once('error', function (error) {
+          console.log("Error: ", error);
+          resolve(false);
+        });
+    });
   }
 }
 
