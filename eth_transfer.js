@@ -5,7 +5,7 @@ const Tx = require('ethereumjs-tx').Transaction;
 const nonce_helper = require('./nonce_helper');
 
 class EthTransfer {
-  constructor(network, network_provider, contract_address, eth_src_address, eth_src_priv_key, gas_limit) {
+  constructor(network, network_provider, contract_address, eth_src_address, eth_src_priv_key, gas_limit, roks_eth_src_same) {
     this.network = network;
     this.network_provider = network_provider;
     this.contract_address = contract_address;
@@ -16,6 +16,8 @@ class EthTransfer {
     this.web3 = null;
     this.contract = null;
     this.transactionCount = 0;
+    this.localNonceIncrement = 0;
+    this.roks_eth_src_same = roks_eth_src_same;
   }
 
   async init() {
@@ -30,14 +32,28 @@ class EthTransfer {
   }
 
   async transfer(recipient, amount) {
-    const { web3, transactionCount } = this;
-    // Combine initial transaction count and controlled nonce increment
-    const nonceIncrement = nonce_helper.getNonceIncrement();
+    const { web3, transactionCount, roks_eth_src_same, localNonceIncrement } = this;
+    // If both roks and eth sources are the same, use the global nonce increment
+    // Otherwise, use the local one
+    let nonceIncrement;
+    if (roks_eth_src_same) {
+      console.log("Using global nonce increment.");
+      nonceIncrement = nonce_helper.getNonceIncrement();
+      // Increase nonceIncrement by 1
+      nonce_helper.increaseNonceIncrement();
+    } else {
+      console.log("Using local  nonce increment.");
+      nonceIncrement = localNonceIncrement;
+      // Increase localNonceIncrement by 1
+      this.localNonceIncrement = nonceIncrement + 1;
+    }
+
+    // Combine initial transaction count and controlled nonce increment to create nonce
     const count = transactionCount + nonceIncrement;
     const nonce = web3.utils.toHex(count);
-    // Increment nonceIncrement by 1
-    nonce_helper.increaseNonceIncrement();
+
     console.log(`ETH - tx count:${transactionCount} increment:${nonceIncrement} nonce:${nonce}`);
+
     // Get gas price
     const gasPrice = await web3.eth.getGasPrice().then((result) => {
       return result;

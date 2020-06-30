@@ -19,8 +19,8 @@ const ETH_GAS_LIMIT = properties.roks_gas_limit;
 
 const RoksTransfer = require('./roks_transfer').RoksTransfer;
 const EthTransfer = require('./eth_transfer').EthTransfer;
-const roksTransfer = new RoksTransfer(CONTRACT_ABI, NETWORK, NETWORK_PROVIDER, CONTRACT_ADDRESS, ROKS_SRC_ADDRESS, ROKS_SRC_PRIV_KEY, ROKS_GAS_LIMIT);
-const ethTransfer = new EthTransfer(NETWORK, NETWORK_PROVIDER, CONTRACT_ADDRESS, ETH_SRC_ADDRESS, ETH_SRC_PRIV_KEY, ETH_GAS_LIMIT);
+const roksTransfer = new RoksTransfer(CONTRACT_ABI, NETWORK, NETWORK_PROVIDER, CONTRACT_ADDRESS, ROKS_SRC_ADDRESS, ROKS_SRC_PRIV_KEY, ROKS_GAS_LIMIT, ROKS_SRC_ADDRESS === ETH_SRC_ADDRESS);
+const ethTransfer = new EthTransfer(NETWORK, NETWORK_PROVIDER, CONTRACT_ADDRESS, ETH_SRC_ADDRESS, ETH_SRC_PRIV_KEY, ETH_GAS_LIMIT, ROKS_SRC_ADDRESS === ETH_SRC_ADDRESS);
 
 const server = http.createServer((req, res) => {
     let body = [];
