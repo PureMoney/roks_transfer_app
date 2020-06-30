@@ -4,6 +4,7 @@ const { http_options } = require('./properties');
 const Tx = require('ethereumjs-tx').Transaction;
 const Web3EthContract = require('web3-eth-contract');
 const contract = require('./contract_abi');
+const nonce_helper = require('./nonce_helper');
 
 class RoksTransfer {
   constructor(contract_abi, network, network_provider, contract_address, roks_src_address, roks_src_priv_key, gas_limit) {
@@ -17,13 +18,15 @@ class RoksTransfer {
     this.private_key = new Buffer(roks_src_priv_key, 'hex');
     this.web3 = null;
     this.contract = null;
+    this.transactionCount = 0;
   }
 
   async init(){
     this.web3 = await this.setUpWeb3(this.network_provider);
-    console.log("Web3 is set up...")
+    console.log("ROKS Web3 is set up...");
     this.contract = await this.setupContract(this.contract_abi, this.contract_address, this.roks_src_address);
-    console.log("Contract is set up...")
+    console.log("ROKS Contract is set up...");
+    this.transactionCount = await this.web3.eth.getTransactionCount(this.roks_src_address);
     console.log("RoksTransfer initialization done.");
   }
 
@@ -36,10 +39,15 @@ class RoksTransfer {
   }
 
   async transfer(recipient, amount){
-    const { web3, contract} = this;
-
-    const count = await web3.eth.getTransactionCount(this.roks_src_address);
+    const { web3, contract, transactionCount} = this;
+    // Combine initial transaction count and controlled nonce increment
+    const nonceIncrement = nonce_helper.getNonceIncrement();
+    const count = transactionCount + nonceIncrement;
     const nonce = web3.utils.toHex(count);
+    // Increment nonceIncrement by 1
+    nonce_helper.increaseNonceIncrement();
+    console.log(`ROKS - tx count:${transactionCount} increment:${nonceIncrement} nonce:${nonce}`);
+
     const data = contract.methods.transfer(recipient, Web3.utils.toWei(amount.toString(), 'ether')).encodeABI();
 
     const gasPrice = await web3.eth.getGasPrice().then((result) => {
