@@ -1,8 +1,9 @@
 const Web3 = require('web3');
 const Web3HttpProvider = require('web3-providers-http');
-const { http_options } = require('./properties');
+const { http_options, ws_options } = require('./properties');
 const Tx = require('ethereumjs-tx').Transaction;
 const nonce_helper_fn = require('./nonce_helper');
+const Web3WsProvider = require('web3-providers-ws');
 
 class EthTransfer {
   constructor(
@@ -36,13 +37,19 @@ class EthTransfer {
 
   async init() {
     this.web3 = await this.setUpWeb3(this.network_provider);
-    console.log("ETH Web3 is set up...");
     this.transactionCount = await this.web3.eth.getTransactionCount(this.eth_src_address);
     console.log("EthTransfer initialization done.");
   }
 
   async setUpWeb3(network_provider) {
-    return new Web3(new Web3HttpProvider(network_provider, http_options));
+    // If provider is an https connection, use the http provider.
+    // Otherwise, use the websocket provider
+    if (network_provider.startsWith("http")){
+      console.log("ETH Web3 with HTTP provider is setting up...");
+      return new Web3(new Web3HttpProvider(network_provider, http_options));
+    }
+    console.log("ETH Web3 with HTTP provider is setting up...");
+    return new Web3(new Web3WsProvider(network_provider, ws_options));
   }
 
   async transfer(recipient, amount) {
