@@ -41,7 +41,22 @@ class RoksTransfer {
   }
 
   async transfer(recipient, amount) {
-    const { web3, contract, transaction_count, roks_eth_src_same, localNonceIncrement } = this;
+    const { web3, contract, roks_src_address, transaction_count, roks_eth_src_same, localNonceIncrement } = this;
+    // Amount should not be zero or less
+    if (parseFloat(amount) <= 0){
+      console.log("Invalid amount (less than zero).");
+      return false;
+    }
+    let weiBalance = await web3.eth.getBalance(roks_src_address).then(balance => balance);
+    const balance = web3.utils.fromWei(weiBalance);
+    console.log("Balance: ", balance, " Type:", typeof balance);
+    console.log("Amount: ", amount, " Type:", typeof amount);
+    // Balance should not be less than the amount
+    if (parseFloat(balance) < parseFloat(amount)){
+      console.log("Invalid amount (greater than current balance).");
+      return false;
+    }
+
     // If both roks and eth sources are the same, use the global nonce increment
     // Otherwise, use the local one
     let nonceIncrement;
