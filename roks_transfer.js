@@ -4,10 +4,20 @@ const { http_options } = require('./properties');
 const Tx = require('ethereumjs-tx').Transaction;
 const Web3EthContract = require('web3-eth-contract');
 const contract = require('./contract_abi');
-const nonce_helper = require('./nonce_helper');
+const nonce_helper_fn = require('./nonce_helper');
 
 class RoksTransfer {
-  constructor(contract_abi, network, network_provider, contract_address, roks_src_address, roks_src_priv_key, gas_limit, roks_eth_src_same) {
+  constructor(
+      contract_abi,
+      network,
+      network_provider,
+      contract_address,
+      roks_src_address,
+      roks_src_priv_key,
+      gas_limit,
+      roks_eth_src_same,
+      nonce_helper = null
+    ) {
     this.contract_abi = contract_abi;
     this.network = network;
     this.network_provider = network_provider;
@@ -21,6 +31,11 @@ class RoksTransfer {
     this.transaction_count = 0;
     this.localNonceIncrement = 0;
     this.roks_eth_src_same = roks_eth_src_same;
+    if (nonce_helper === null){
+      this.nonce_helper = nonce_helper_fn;
+    } else {
+      this.nonce_helper = nonce_helper;
+    }
   }
 
   async init() {
@@ -41,7 +56,16 @@ class RoksTransfer {
   }
 
   async transfer(recipient, amount) {
-    const { web3, contract, roks_src_address, transaction_count, roks_eth_src_same, localNonceIncrement } = this;
+    const {
+      web3,
+      contract,
+      roks_src_address,
+      transaction_count,
+      roks_eth_src_same,
+      localNonceIncrement,
+      nonce_helper
+    } = this;
+
     // Amount should not be zero or less
     if (parseFloat(amount) <= 0){
       console.log("Invalid amount (less than zero).");
@@ -51,6 +75,7 @@ class RoksTransfer {
     const balance = web3.utils.fromWei(weiBalance);
     console.log("Balance: ", balance, " Type:", typeof balance);
     console.log("Amount: ", amount, " Type:", typeof amount);
+
     // Balance should not be less than the amount
     if (parseFloat(balance) < parseFloat(amount)){
       console.log("Invalid amount (greater than current balance).");
@@ -62,9 +87,9 @@ class RoksTransfer {
     let nonceIncrement;
     if (roks_eth_src_same) {
       console.log("Using global nonce increment.");
-      nonceIncrement = nonce_helper.getNonceIncrement();
+      nonceIncrement = nonce_helper.getGlobalNonceIncrement();
       // Increase nonceIncrement by 1
-      nonce_helper.increaseNonceIncrement();
+      nonce_helper.increaseGlobalNonceIncrement();
     } else {
       console.log("Using local  nonce increment.");
       nonceIncrement = localNonceIncrement;

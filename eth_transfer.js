@@ -2,10 +2,19 @@ const Web3 = require('web3');
 const Web3HttpProvider = require('web3-providers-http');
 const { http_options } = require('./properties');
 const Tx = require('ethereumjs-tx').Transaction;
-const nonce_helper = require('./nonce_helper');
+const nonce_helper_fn = require('./nonce_helper');
 
 class EthTransfer {
-  constructor(network, network_provider, contract_address, eth_src_address, eth_src_priv_key, gas_limit, roks_eth_src_same) {
+  constructor(
+      network,
+      network_provider,
+      contract_address,
+      eth_src_address,
+      eth_src_priv_key,
+      gas_limit,
+      roks_eth_src_same,
+      nonce_helper = null,
+    ) {
     this.network = network;
     this.network_provider = network_provider;
     this.contract_address = contract_address;
@@ -18,6 +27,11 @@ class EthTransfer {
     this.transactionCount = 0;
     this.localNonceIncrement = 0;
     this.roks_eth_src_same = roks_eth_src_same;
+    if (nonce_helper === null){
+      this.nonce_helper = nonce_helper_fn;
+    } else {
+      this.nonce_helper = nonce_helper;
+    }
   }
 
   async init() {
@@ -32,16 +46,26 @@ class EthTransfer {
   }
 
   async transfer(recipient, amount) {
-    const { web3, eth_src_address, transactionCount, roks_eth_src_same, localNonceIncrement } = this;
+    const {
+      web3,
+      eth_src_address,
+      transactionCount,
+      roks_eth_src_same,
+      localNonceIncrement,
+      nonce_helper
+    } = this;
+
     // Amount should not be zero or less
     if (parseFloat(amount) <= 0){
       console.log("Invalid amount (less than zero).");
       return false;
     }
+
     let weiBalance = await web3.eth.getBalance(eth_src_address).then(balance => balance);
     const balance = web3.utils.fromWei(weiBalance);
     console.log("Balance: ", balance, " Type:", typeof balance);
     console.log("Amount: ", amount, " Type:", typeof amount);
+
     // Balance should not be less than the amount
     if (parseFloat(balance) < parseFloat(amount)){
       console.log("Invalid amount (greater than current balance).");
@@ -53,9 +77,9 @@ class EthTransfer {
     let nonceIncrement;
     if (roks_eth_src_same) {
       console.log("Using global nonce increment.");
-      nonceIncrement = nonce_helper.getNonceIncrement();
+      nonceIncrement = nonce_helper.getGlobalNonceIncrement();
       // Increase nonceIncrement by 1
-      nonce_helper.increaseNonceIncrement();
+      nonce_helper.increaseGlobalNonceIncrement();
     } else {
       console.log("Using local  nonce increment.");
       nonceIncrement = localNonceIncrement;

@@ -1,12 +1,12 @@
 let nonce_increment = 0;
 
-function increaseNonceIncrement(){
+function increaseGlobalNonceIncrement(){
   nonce_increment = nonce_increment + 1;
 }
 
-function getNonceIncrement(){
+function getGlobalNonceIncrement(){
   return nonce_increment;
 }
 
-module.exports.increaseNonceIncrement = increaseNonceIncrement;
-module.exports.getNonceIncrement = getNonceIncrement;
+module.exports.increaseGlobalNonceIncrement = increaseGlobalNonceIncrement;
+module.exports.getGlobalNonceIncrement = getGlobalNonceIncrement;

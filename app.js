@@ -17,10 +17,12 @@ const ETH_SRC_ADDRESS = properties.eth_src_address;
 const ETH_SRC_PRIV_KEY = properties.eth_src_priv_key;
 const ETH_GAS_LIMIT = properties.roks_gas_limit;
 
+const NONCE_HELPER = require('./index').nonce_helper;
+
 const RoksTransfer = require('./roks_transfer').RoksTransfer;
 const EthTransfer = require('./eth_transfer').EthTransfer;
-const roksTransfer = new RoksTransfer(CONTRACT_ABI, NETWORK, NETWORK_PROVIDER, CONTRACT_ADDRESS, ROKS_SRC_ADDRESS, ROKS_SRC_PRIV_KEY, ROKS_GAS_LIMIT, ROKS_SRC_ADDRESS === ETH_SRC_ADDRESS);
-const ethTransfer = new EthTransfer(NETWORK, NETWORK_PROVIDER, CONTRACT_ADDRESS, ETH_SRC_ADDRESS, ETH_SRC_PRIV_KEY, ETH_GAS_LIMIT, ROKS_SRC_ADDRESS === ETH_SRC_ADDRESS);
+const roksTransfer = new RoksTransfer(CONTRACT_ABI, NETWORK, NETWORK_PROVIDER, CONTRACT_ADDRESS, ROKS_SRC_ADDRESS, ROKS_SRC_PRIV_KEY, ROKS_GAS_LIMIT, ROKS_SRC_ADDRESS === ETH_SRC_ADDRESS, NONCE_HELPER);
+const ethTransfer = new EthTransfer(NETWORK, NETWORK_PROVIDER, CONTRACT_ADDRESS, ETH_SRC_ADDRESS, ETH_SRC_PRIV_KEY, ETH_GAS_LIMIT, ROKS_SRC_ADDRESS === ETH_SRC_ADDRESS, NONCE_HELPER);
 
 const server = http.createServer((req, res) => {
     let body = [];
