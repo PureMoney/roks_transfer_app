@@ -17,10 +17,12 @@ const ETH_SRC_ADDRESS = properties.eth_src_address;
 const ETH_SRC_PRIV_KEY = properties.eth_src_priv_key;
 const ETH_GAS_LIMIT = properties.roks_gas_limit;
 
+const NONCE_HELPER = require('./index').nonce_helper;
+
 const RoksTransfer = require('./roks_transfer').RoksTransfer;
 const EthTransfer = require('./eth_transfer').EthTransfer;
-const roksTransfer = new RoksTransfer(CONTRACT_ABI, NETWORK, NETWORK_PROVIDER, CONTRACT_ADDRESS, ROKS_SRC_ADDRESS, ROKS_SRC_PRIV_KEY, ROKS_GAS_LIMIT);
-const ethTransfer = new EthTransfer(NETWORK, NETWORK_PROVIDER, CONTRACT_ADDRESS, ETH_SRC_ADDRESS, ETH_SRC_PRIV_KEY, ETH_GAS_LIMIT);
+const roksTransfer = new RoksTransfer(CONTRACT_ABI, NETWORK, NETWORK_PROVIDER, CONTRACT_ADDRESS, ROKS_SRC_ADDRESS, ROKS_SRC_PRIV_KEY, ROKS_GAS_LIMIT, ROKS_SRC_ADDRESS === ETH_SRC_ADDRESS, NONCE_HELPER);
+const ethTransfer = new EthTransfer(NETWORK, NETWORK_PROVIDER, CONTRACT_ADDRESS, ETH_SRC_ADDRESS, ETH_SRC_PRIV_KEY, ETH_GAS_LIMIT, ROKS_SRC_ADDRESS === ETH_SRC_ADDRESS, NONCE_HELPER);
 
 const server = http.createServer((req, res) => {
     let body = [];
@@ -35,19 +37,22 @@ const server = http.createServer((req, res) => {
       const { recipient, amount, tx_type } = body;
       if (tx_type === 'roks') {
         console.log('sending roks.....');
-        const result = await roksTransfer.transfer(recipient, amount);
-        if (!result){
-          res.statusCode = 500;
-        } else {
+        try {
+          await roksTransfer.transfer(recipient, amount);
           res.statusCode = 200;
+        } catch (error) {
+          console.log("!!!!!!!!!!!!!!!!!!!!!", error.toString());
+          res.statusCode = 500;
         }
       } else if (tx_type === 'eth') {
         console.log('sending eth.....');
-        const result = await ethTransfer.transfer(recipient, amount);
-        if (!result){
-          res.statusCode = 500;
-        } else {
+        try {
+          await ethTransfer.transfer(recipient, amount);
+          console.log("Success~~~~~~~~~~~~~~~~~~~~~~");
           res.statusCode = 200;
+        } catch (error) {
+          console.log("Failed~~~~~~~~~~~~~~~~~~~~~~~", error.toString());
+          res.statusCode = 500;
         }
       }
       res.end();

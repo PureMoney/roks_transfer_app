@@ -23,6 +23,25 @@ const http_options = {
   withCredentials: false,
 };
 
+const ws_options = {
+  timeout: 30000, // ms
+  clientConfig: {
+    // Useful if requests are large
+    maxReceivedFrameSize: 100000000,   // bytes - default: 1MiB
+    maxReceivedMessageSize: 100000000, // bytes - default: 8MiB
+    // Useful to keep a connection alive
+    keepalive: true,
+    keepaliveInterval: 60000 // ms
+  },
+  // Enable auto reconnection
+  reconnect: {
+      auto: true,
+      delay: 5000, // ms
+      maxAttempts: 5,
+      onTimeout: false
+  }
+}
+
 exports.hostname = hostname;
 exports.port = port;
 
@@ -36,3 +55,4 @@ exports.eth_src_address = eth_src_address;
 exports.eth_src_priv_key = eth_src_priv_key;
 exports.eth_gas_limit = eth_gas_limit;
 exports.http_options = http_options;
+exports.ws_options = ws_options;
