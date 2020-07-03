@@ -65,10 +65,10 @@ class EthTransfer {
     // Amount should not be zero or less
     if (parseFloat(amount) <= 0){
       console.log("Invalid amount (less than zero).");
-      return false;
+      throw new Error("Invalid amount (less than zero).");
     }
 
-    let weiBalance = await web3.eth.getBalance(eth_src_address).then(balance => balance);
+    let weiBalance = await web3.eth.getBalance(eth_src_address);
     const balance = web3.utils.fromWei(weiBalance);
     console.log("Balance: ", balance, " Type:", typeof balance);
     console.log("Amount: ", amount, " Type:", typeof amount);
@@ -76,7 +76,7 @@ class EthTransfer {
     // Balance should not be less than the amount
     if (parseFloat(balance) < parseFloat(amount)){
       console.log("Invalid amount (greater than current balance).");
-      return false;
+      throw new Error("Invalid amount (greater than current balance).");
     }
 
     // If both roks and eth sources are the same, use the global nonce increment
@@ -101,9 +101,7 @@ class EthTransfer {
     console.log(`ETH - tx count:${transactionCount} increment:${nonceIncrement} nonce:${nonce}`);
 
     // Get gas price
-    const gasPrice = await web3.eth.getGasPrice().then((result) => {
-      return result;
-    })
+    const gasPrice = await web3.eth.getGasPrice();
 
     const txObj = {
       nonce,
@@ -121,11 +119,11 @@ class EthTransfer {
       web3.eth.sendSignedTransaction('0x' + serializedTx.toString('hex'))
         .once('receipt', function (receipt) {
           console.log("Receipt: ", receipt);
-          resolve(true);
+          resolve(receipt);
         })
         .once('error', function (error) {
           console.log("Error: ", error);
-          resolve(false);
+          reject(error);
         });
     });
   }

@@ -37,19 +37,22 @@ const server = http.createServer((req, res) => {
       const { recipient, amount, tx_type } = body;
       if (tx_type === 'roks') {
         console.log('sending roks.....');
-        const result = await roksTransfer.transfer(recipient, amount);
-        if (!result){
-          res.statusCode = 500;
-        } else {
+        try {
+          await roksTransfer.transfer(recipient, amount);
           res.statusCode = 200;
+        } catch (error) {
+          console.log("!!!!!!!!!!!!!!!!!!!!!", error.toString());
+          res.statusCode = 500;
         }
       } else if (tx_type === 'eth') {
         console.log('sending eth.....');
-        const result = await ethTransfer.transfer(recipient, amount);
-        if (!result){
-          res.statusCode = 500;
-        } else {
+        try {
+          await ethTransfer.transfer(recipient, amount);
+          console.log("Success~~~~~~~~~~~~~~~~~~~~~~");
           res.statusCode = 200;
+        } catch (error) {
+          console.log("Failed~~~~~~~~~~~~~~~~~~~~~~~", error.toString());
+          res.statusCode = 500;
         }
       }
       res.end();

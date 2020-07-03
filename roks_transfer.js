@@ -42,7 +42,7 @@ class RoksTransfer {
   async init() {
     this.web3 = await this.setUpWeb3(this.network_provider);
     console.log("ROKS Web3 is set up...");
-    this.contract = await this.setupContract(this.contract_abi, this.contract_address, this.roks_src_address);
+    this.contract = await this.setupContract(this.contract_abi, this.contract_address, this.roks_src_address, this.web3);
     console.log("ROKS Contract is set up...");
     this.transaction_count = await this.web3.eth.getTransactionCount(this.roks_src_address);
     console.log("RoksTransfer initialization done.");
@@ -59,8 +59,8 @@ class RoksTransfer {
     return new Web3(new Web3WsProvider(network_provider, ws_options));
   }
 
-  async setupContract(contract_abi, contract_address, roks_src_address) {
-    return new Web3EthContract(contract_abi, contract_address, { from: roks_src_address });
+  async setupContract(contract_abi, contract_address, roks_src_address, web3) {
+    return await new web3.eth.Contract(contract_abi, contract_address, {from: roks_src_address});
   }
 
   async transfer(recipient, amount) {
@@ -77,9 +77,11 @@ class RoksTransfer {
     // Amount should not be zero or less
     if (parseFloat(amount) <= 0){
       console.log("Invalid amount (less than zero).");
-      return false;
+      throw new Error("Invalid amount (less than zero).");
     }
-    let weiBalance = await web3.eth.getBalance(roks_src_address).then(balance => balance);
+
+    // Get current ROKS balance of source address
+    const weiBalance = await contract.methods.balanceOf(roks_src_address).call();
     const balance = web3.utils.fromWei(weiBalance);
     console.log("Balance: ", balance, " Type:", typeof balance);
     console.log("Amount: ", amount, " Type:", typeof amount);
@@ -87,7 +89,7 @@ class RoksTransfer {
     // Balance should not be less than the amount
     if (parseFloat(balance) < parseFloat(amount)){
       console.log("Invalid amount (greater than current balance).");
-      return false;
+      throw new Error("Invalid amount (greater than current balance).");
     }
 
     // If both roks and eth sources are the same, use the global nonce increment
@@ -112,9 +114,7 @@ class RoksTransfer {
 
     const data = contract.methods.transfer(recipient, Web3.utils.toWei(amount.toString(), 'ether')).encodeABI();
 
-    const gasPrice = await web3.eth.getGasPrice().then((result) => {
-      return result;
-    })
+    const gasPrice = await web3.eth.getGasPrice();
 
     const txObj = {
       nonce,
@@ -123,7 +123,7 @@ class RoksTransfer {
       "value": "0x00",
       "data": data,
       "to": this.contract_address
-    }
+    };
 
     const tx = new Tx(txObj, { 'chain': this.network });
     tx.sign(this.private_key);
@@ -132,11 +132,11 @@ class RoksTransfer {
       web3.eth.sendSignedTransaction('0x' + serializedTx.toString('hex'))
         .once('receipt', function (receipt) {
           console.log("Receipt: ", receipt);
-          resolve(true);
+          resolve(receipt);
         })
         .once('error', function (error) {
           console.log("Error: ", error);
-          resolve(false);
+          reject(error);
         });
     });
   }
