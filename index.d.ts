@@ -12,11 +12,13 @@ declare module "@bcabansay/roks_transfer_app" {
             nonce_helper: () => {}
           )
           
-          init()
-          setUpWeb3(network_provider: string)
-          setupContract(contract_abi: any, contract_address: string, roks_src_address: string, web3: any)
-          transfer(recipient: any, amount: number)
-    }
+          init(): void
+          setUpWeb3(network_provider: string): void
+          setupContract(contract_abi: any, contract_address: string, roks_src_address: string, web3: any): void
+          transfer(recipient: any, amount: number): void
+    };
+
+    export const RoksContract: any;
 
     export class EthTransfer {
         constructor(
@@ -30,8 +32,8 @@ declare module "@bcabansay/roks_transfer_app" {
             nonce_helper: () => {}
           )
           
-          init()
-          setUpWeb3(network_provider: string)
-          transfer(recipient: string, amount: number)
+          init(): void
+          setUpWeb3(network_provider: string): void
+          transfer(recipient: string, amount: number): void
     }
 }
