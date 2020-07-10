@@ -16,7 +16,7 @@ declare module "@bcabansay/roks_transfer_app" {
           setUpWeb3(network_provider: string): void
           setupContract(contract_abi: any, contract_address: string, roks_src_address: string, web3: any): void
           transfer(recipient: any, amount: number): void
-    };
+    }
 
     export const RoksContract: any;
 
