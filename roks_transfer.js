@@ -1,6 +1,6 @@
 const Web3 = require('web3');
 const Web3HttpProvider = require('web3-providers-http');
-const { http_options, ws_options } = require('./properties');
+const { default_http_options, default_ws_options } = require('./properties');
 const Tx = require('ethereumjs-tx').Transaction;
 const Web3EthContract = require('web3-eth-contract');
 const contract = require('./contract_abi');
@@ -17,7 +17,9 @@ class RoksTransfer {
       roks_src_priv_key,
       gas_limit,
       roks_eth_src_same,
-      nonce_helper = null
+      nonce_helper = null,
+      http_options = default_http_options,
+      ws_options = default_ws_options
     ) {
     this.contract_abi = contract_abi;
     this.network = network;
@@ -37,6 +39,8 @@ class RoksTransfer {
     } else {
       this.nonce_helper = nonce_helper;
     }
+    this.http_options = http_options;
+    this.ws_options = ws_options;
   }
 
   async init() {
@@ -53,10 +57,10 @@ class RoksTransfer {
     // Otherwise, use the websocket provider
     if (network_provider.startsWith("http")){
       console.log("ROKS Web3 with HTTP provider is setting up...");
-      return new Web3(new Web3HttpProvider(network_provider, http_options));
+      return new Web3(new Web3HttpProvider(network_provider, this.http_options));
     }
     console.log("ROKS Web3 with HTTP provider is setting up...");
-    return new Web3(new Web3WsProvider(network_provider, ws_options));
+    return new Web3(new Web3WsProvider(network_provider, this.ws_options));
   }
 
   async setupContract(contract_abi, contract_address, roks_src_address, web3) {
