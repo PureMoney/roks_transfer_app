@@ -50,9 +50,11 @@ class EthTransfer {
     // Otherwise, use the websocket provider
     if (network_provider.startsWith("http")){
       console.log("ETH Web3 with HTTP provider is setting up...");
+      console.log("Using HTTPS Options: ", this.http_options);
       return new Web3(new Web3HttpProvider(network_provider, this.http_options));
     }
     console.log("ETH Web3 with HTTP provider is setting up...");
+    console.log("Using WS Options: ", this.ws_options);
     return new Web3(new Web3WsProvider(network_provider, this.ws_options));
   }
 
