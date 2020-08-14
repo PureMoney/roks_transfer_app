@@ -9,7 +9,9 @@ declare module "@bcabansay/roks_transfer_app" {
             roks_src_priv_key: string,
             gas_limit: number,
             roks_eth_src_same: boolean,
-            nonce_helper: () => {}
+            nonce_helper: () => {},
+            http_options: any,
+            ws_options: any
           )
           
           init(): void
@@ -29,7 +31,9 @@ declare module "@bcabansay/roks_transfer_app" {
             eth_src_priv_key: string,
             gas_limit: number,
             roks_eth_src_same: boolean,
-            nonce_helper: () => {}
+            nonce_helper: () => {},
+            http_options: any,
+            ws_options: any
           )
           
           init(): void
