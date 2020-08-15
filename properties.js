@@ -17,13 +17,13 @@ const eth_src_priv_key = 'private key of the source of ETH';
 const roks_gas_limit = '900000';
 const eth_gas_limit = '21000';
 
-const http_options = {
+const default_http_options = {
   keepAlive: true,
   timeout: 20000, // milliseconds,
   withCredentials: false,
 };
 
-const ws_options = {
+const default_ws_options = {
   timeout: 30000, // ms
   clientConfig: {
     // Useful if requests are large
@@ -54,5 +54,5 @@ exports.roks_gas_limit = roks_gas_limit;
 exports.eth_src_address = eth_src_address;
 exports.eth_src_priv_key = eth_src_priv_key;
 exports.eth_gas_limit = eth_gas_limit;
-exports.http_options = http_options;
-exports.ws_options = ws_options;
+exports.default_http_options = default_http_options;
+exports.default_ws_options = default_ws_options;
