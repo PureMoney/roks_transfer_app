@@ -6,6 +6,7 @@ const Web3EthContract = require('web3-eth-contract');
 const contract = require('./contract_abi');
 const nonce_helper_fn = require('./nonce_helper');
 const Web3WsProvider = require('web3-providers-ws');
+const Big = require('big.js');
 
 class RoksTransfer {
   constructor(
