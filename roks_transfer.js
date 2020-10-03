@@ -6,6 +6,7 @@ const Web3EthContract = require('web3-eth-contract');
 const contract = require('./contract_abi');
 const nonce_helper_fn = require('./nonce_helper');
 const Web3WsProvider = require('web3-providers-ws');
+const Big = require('big.js');
 
 class RoksTransfer {
   constructor(
@@ -80,8 +81,10 @@ class RoksTransfer {
       nonce_helper
     } = this;
 
+    const bigAmount = Big(amount);
+
     // Amount should not be zero or less
-    if (parseFloat(amount) <= 0){
+    if (bigAmount.lte(0)){
       console.log("Invalid amount (less than zero).");
       throw new Error("Invalid amount (less than zero).");
     }
@@ -92,8 +95,10 @@ class RoksTransfer {
     console.log("Balance: ", balance, " Type:", typeof balance);
     console.log("Amount: ", amount, " Type:", typeof amount);
 
+    const bigBalance = Big(balance);
+
     // Balance should not be less than the amount
-    if (parseFloat(balance) < parseFloat(amount)){
+    if (bigBalance.lt(bigAmount)){
       console.log("Invalid amount (greater than current balance).");
       throw new Error("Invalid amount (greater than current balance).");
     }
