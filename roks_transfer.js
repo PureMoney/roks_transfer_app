@@ -48,7 +48,7 @@ class RoksTransfer {
   }
 
   async init() {
-    this.web3 = await this.setUpWeb3(this.network_provider);
+    this.web3 = await this.setUpWeb3(this.network_provider, src_mnemonic);
     console.log("ROKS Web3 is set up...");
     this.contract = await this.setupContract(this.contract_abi, this.contract_address, this.roks_src_address, this.web3);
     console.log("ROKS Contract is set up...");
