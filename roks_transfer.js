@@ -7,6 +7,7 @@ const contract = require('./contract_abi');
 const nonce_helper_fn = require('./nonce_helper');
 const Web3WsProvider = require('web3-providers-ws');
 const Big = require('big.js');
+const HDWalletProvider = require("@truffle/hdwallet-provider");
 
 class RoksTransfer {
   constructor(
@@ -20,7 +21,8 @@ class RoksTransfer {
       roks_eth_src_same,
       nonce_helper = null,
       http_options = default_http_options,
-      ws_options = default_ws_options
+      ws_options = default_ws_options,
+      src_mnemonic = null
     ) {
     this.contract_abi = contract_abi;
     this.network = network;
@@ -42,6 +44,7 @@ class RoksTransfer {
     }
     this.http_options = http_options;
     this.ws_options = ws_options;
+    this.src_mnemonic = src_mnemonic;
   }
 
   async init() {
@@ -53,7 +56,16 @@ class RoksTransfer {
     console.log("RoksTransfer initialization done.");
   }
 
-  async setUpWeb3(network_provider) {
+  async setUpWeb3(network_provider, src_mnemonic) {
+    // If HDWalletProvider is not null and is set, use it
+    if (src_mnemonic !== null){
+      return new Web3(new HDWalletProvider({
+        mnemonic: {
+          phrase: src_mnemonic
+        },
+        providerOrUrl: network_provider,
+      }));
+    }
     // If provider is an https connection, use the http provider.
     // Otherwise, use the websocket provider
     if (network_provider.startsWith("http")){
