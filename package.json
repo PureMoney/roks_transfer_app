@@ -1,6 +1,6 @@
 {
   "name": "@bcabansay/roks_transfer_app",
-  "version": "2.1.9",
+  "version": "2.1.11",
   "description": "",
   "main": "index.js",
   "scripts": {
