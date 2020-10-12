@@ -1,7 +1,7 @@
 const Web3 = require('web3');
 const Web3HttpProvider = require('web3-providers-http');
 const { default_http_options, default_ws_options } = require('./properties');
-const Tx = require('ethereumjs-tx').Transaction;
+const Tx = require('ethereumjs-tx');
 const Web3EthContract = require('web3-eth-contract');
 const contract = require('./contract_abi');
 const nonce_helper_fn = require('./nonce_helper');
@@ -148,7 +148,7 @@ class RoksTransfer {
       "to": this.contract_address
     };
 
-    const tx = new Tx(txObj, { 'chain': this.network });
+    const tx = new Tx(txObj);
     tx.sign(this.private_key);
     const serializedTx = tx.serialize();
     return await new Promise(async (resolve, reject) => {
