@@ -11,11 +11,12 @@ declare module "@bcabansay/roks_transfer_app" {
             roks_eth_src_same: boolean,
             nonce_helper: () => {},
             http_options: any,
-            ws_options: any
+            ws_options: any,
+            src_mnemonic: string
           )
           
           init(): void
-          setUpWeb3(network_provider: string): void
+          setUpWeb3(network_provider: string, src_mnemonic: string): any
           setupContract(contract_abi: any, contract_address: string, roks_src_address: string, web3: any): void
           transfer(recipient: any, amount: number): void
     }
@@ -33,11 +34,12 @@ declare module "@bcabansay/roks_transfer_app" {
             roks_eth_src_same: boolean,
             nonce_helper: () => {},
             http_options: any,
-            ws_options: any
+            ws_options: any,
+            src_mnemonic: string
           )
           
           init(): void
-          setUpWeb3(network_provider: string): void
+          setUpWeb3(network_provider: string, src_mnemonic: string): any
           transfer(recipient: string, amount: number): void
     }
 }
