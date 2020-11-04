@@ -1,18 +1,15 @@
 const Web3 = require('web3');
 const Web3HttpProvider = require('web3-providers-http');
 const { default_http_options, default_ws_options } = require('./properties');
-const Tx = require('ethereumjs-tx');
-const Web3EthContract = require('web3-eth-contract');
 const contract = require('./contract_abi');
 const nonce_helper_fn = require('./nonce_helper');
 const Web3WsProvider = require('web3-providers-ws');
-const Big = require('big.js');
 const HDWalletProvider = require("@truffle/hdwallet-provider");
+import Big from 'big.js'
 
 class RoksTransfer {
   constructor(
       contract_abi,
-      network,
       network_provider,
       contract_address,
       roks_src_address,
@@ -25,13 +22,12 @@ class RoksTransfer {
       src_mnemonic = null
     ) {
     this.contract_abi = contract_abi;
-    this.network = network;
     this.network_provider = network_provider;
     this.contract_address = contract_address;
     this.roks_src_address = roks_src_address;
     this.roks_src_priv_key = roks_src_priv_key;
     this.gas_limit = gas_limit;
-    this.private_key = new Buffer(roks_src_priv_key, 'hex');
+    this.private_key = '0x' + roks_src_priv_key
     this.web3 = null;
     this.contract = null;
     this.transaction_count = 0;
@@ -54,6 +50,7 @@ class RoksTransfer {
     console.log("ROKS Contract is set up...");
     this.transaction_count = await this.web3.eth.getTransactionCount(this.roks_src_address);
     console.log("RoksTransfer initialization done.");
+    console.log('private kay: ', this.private_key)
   }
 
   async setUpWeb3(network_provider, src_mnemonic) {
@@ -93,7 +90,9 @@ class RoksTransfer {
       nonce_helper
     } = this;
 
-    const bigAmount = Big(amount);
+    console.log('Recipient: ', recipient)
+
+    const bigAmount = new Big(amount);
 
     // Amount should not be zero or less
     if (bigAmount.lte(0)){
@@ -138,9 +137,11 @@ class RoksTransfer {
     const data = contract.methods.transfer(recipient, Web3.utils.toWei(amount.toString(), 'ether')).encodeABI();
 
     const gasPrice = await web3.eth.getGasPrice();
+    console.log(`gas price: ${gasPrice.toString()}`)
 
     const txObj = {
       nonce,
+      'from': roks_src_address,
       'gasPrice': web3.utils.toHex(gasPrice.toString()),
       'gasLimit': web3.utils.toHex(this.gas_limit),
       "value": "0x00",
@@ -148,20 +149,14 @@ class RoksTransfer {
       "to": this.contract_address
     };
 
-    const tx = new Tx(txObj);
-    tx.sign(this.private_key);
-    const serializedTx = tx.serialize();
-    return await new Promise(async (resolve, reject) => {
-      web3.eth.sendSignedTransaction('0x' + serializedTx.toString('hex'))
-        .once('receipt', function (receipt) {
-          console.log("Receipt: ", receipt);
-          resolve(receipt);
+    return web3.eth.sendTransaction(txObj)
+        .then((result) => {
+          return result
         })
-        .once('error', function (error) {
-          console.log("Error: ", error);
-          reject(error);
+        .catch((reason) => {
+          console.log("Error: ", reason);
+          throw new Error(reason)
         });
-    });
   }
 }
 
