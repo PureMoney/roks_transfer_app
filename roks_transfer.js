@@ -5,7 +5,7 @@ const contract = require('./contract_abi');
 const nonce_helper_fn = require('./nonce_helper');
 const Web3WsProvider = require('web3-providers-ws');
 const HDWalletProvider = require("@truffle/hdwallet-provider");
-import Big from 'big.js'
+const Big = require('big.js')
 
 class RoksTransfer {
   constructor(
