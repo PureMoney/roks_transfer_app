@@ -4,7 +4,7 @@ const { default_http_options, default_ws_options } = require('./properties');
 const Tx = require('ethereumjs-tx').Transaction;
 const nonce_helper_fn = require('./nonce_helper');
 const Web3WsProvider = require('web3-providers-ws');
-import Big from 'big.js'
+const Big = require('big.js')
 const HDWalletProvider = require("@truffle/hdwallet-provider");
 
 class EthTransfer {
