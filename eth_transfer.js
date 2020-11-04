@@ -4,12 +4,11 @@ const { default_http_options, default_ws_options } = require('./properties');
 const Tx = require('ethereumjs-tx').Transaction;
 const nonce_helper_fn = require('./nonce_helper');
 const Web3WsProvider = require('web3-providers-ws');
-const Big = require('big.js');
+import Big from 'big.js'
 const HDWalletProvider = require("@truffle/hdwallet-provider");
 
 class EthTransfer {
   constructor(
-      network,
       network_provider,
       contract_address,
       eth_src_address,
@@ -21,13 +20,12 @@ class EthTransfer {
       ws_options = default_ws_options,
       src_mnemonic = null
     ) {
-    this.network = network;
     this.network_provider = network_provider;
     this.contract_address = contract_address;
     this.eth_src_address = eth_src_address;
     this.eth_src_priv_key = eth_src_priv_key;
     this.gas_limit = gas_limit;
-    this.private_key = new Buffer(eth_src_priv_key, 'hex');
+    this.private_key = '0x' + eth_src_priv_key
     this.web3 = null;
     this.contract = null;
     this.transactionCount = 0;
@@ -135,20 +133,15 @@ class EthTransfer {
       gasLimit: web3.utils.toHex(this.gas_limit),
     }
 
-    const tx = new Tx(txObj, { 'chain': this.network });
-    tx.sign(this.private_key);
-    const serializedTx = tx.serialize();
-    return await new Promise(async (resolve, reject) => {
-      web3.eth.sendSignedTransaction('0x' + serializedTx.toString('hex'))
-        .once('receipt', function (receipt) {
-          console.log("Receipt: ", receipt);
-          resolve(receipt);
+    return web3.eth.sendTransaction(txObj)
+        .then((tx) => {
+          console.log("Tx: ", tx);
+          return tx;
         })
-        .once('error', function (error) {
-          console.log("Error: ", error);
-          reject(error);
+        .catch((reason) => {
+          console.log("Reason: ", reason);
+          throw new Error(reason);
         });
-    });
   }
 }
 
