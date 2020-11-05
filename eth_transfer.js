@@ -128,7 +128,7 @@ class EthTransfer {
       nonce,
       from: this.eth_src_address,
       to: recipient,
-      value: web3.utils.toHex(web3.utils.toWei(amount, 'ether')),
+      value: web3.utils.toHex(web3.utils.toWei(amount.toString(), 'ether').toString()),
       gasPrice: web3.utils.toHex(gasPrice.toString()),
       gasLimit: web3.utils.toHex(this.gas_limit),
     }
