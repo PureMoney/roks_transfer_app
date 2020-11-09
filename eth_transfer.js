@@ -131,6 +131,7 @@ class EthTransfer {
       value: web3.utils.toHex(web3.utils.toWei(amount.toString(), 'ether').toString()),
       gasPrice: web3.utils.toHex(gasPrice.toString()),
       gasLimit: web3.utils.toHex(this.gas_limit),
+      chain: 'bsc-testnet',  // FIXME: must be a configurable variable
     }
 
     return web3.eth.sendTransaction(txObj)
