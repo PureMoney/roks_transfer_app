@@ -1,7 +1,6 @@
 const Web3 = require('web3');
 const Web3HttpProvider = require('web3-providers-http');
 const { default_http_options, default_ws_options } = require('./properties');
-const Tx = require('ethereumjs-tx').Transaction;
 const nonce_helper_fn = require('./nonce_helper');
 const Web3WsProvider = require('web3-providers-ws');
 const Big = require('big.js')
