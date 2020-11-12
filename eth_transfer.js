@@ -4,7 +4,7 @@ const { default_http_options, default_ws_options } = require('./properties');
 const nonce_helper_fn = require('./nonce_helper');
 const Web3WsProvider = require('web3-providers-ws');
 const Big = require('big.js')
-const HDWalletProvider = require("@truffle/hdwallet-provider");
+const HDWalletProvider = require("@puremoney/hdwallet-provider");
 
 class EthTransfer {
   constructor(

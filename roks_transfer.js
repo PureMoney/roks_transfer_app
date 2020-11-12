@@ -4,7 +4,7 @@ const { default_http_options, default_ws_options } = require('./properties');
 const contract = require('./contract_abi');
 const nonce_helper_fn = require('./nonce_helper');
 const Web3WsProvider = require('web3-providers-ws');
-const HDWalletProvider = require("@truffle/hdwallet-provider");
+const HDWalletProvider = require("@puremoney/hdwallet-provider");
 const Big = require('big.js')
 
 class RoksTransfer {
