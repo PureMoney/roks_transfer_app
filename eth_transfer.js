@@ -4,7 +4,7 @@ const { default_http_options, default_ws_options } = require('./properties');
 const nonce_helper_fn = require('./nonce_helper');
 const Web3WsProvider = require('web3-providers-ws');
 const Big = require('big.js')
-const HDWalletProvider = require("@truffle/hdwallet-provider");
+const HDWalletProvider = require("@puremoney/hdwallet-provider");
 
 class EthTransfer {
   constructor(
@@ -17,7 +17,8 @@ class EthTransfer {
       nonce_helper = null,
       http_options = default_http_options,
       ws_options = default_ws_options,
-      src_mnemonic = null
+      src_mnemonic = null,
+      chain_id = null
     ) {
     this.network_provider = network_provider;
     this.contract_address = contract_address;
@@ -38,6 +39,7 @@ class EthTransfer {
     this.http_options = http_options;
     this.ws_options = ws_options;
     this.src_mnemonic = src_mnemonic;
+    this.chain_id = chain_id
   }
 
   async init() {
@@ -75,7 +77,8 @@ class EthTransfer {
       transactionCount,
       roks_eth_src_same,
       localNonceIncrement,
-      nonce_helper
+      nonce_helper,
+      chain_id
     } = this;
 
     const bigAmount = Big(amount);
@@ -123,6 +126,8 @@ class EthTransfer {
     // Get gas price
     const gasPrice = await web3.eth.getGasPrice();
 
+    const {chain, chainId} = (chain_id == null) ? {chain: 'bsc-mainnet', chainId: 56} : chain_id;
+
     const txObj = {
       nonce,
       from: this.eth_src_address,
@@ -130,7 +135,8 @@ class EthTransfer {
       value: web3.utils.toHex(web3.utils.toWei(amount.toString(), 'ether').toString()),
       gasPrice: web3.utils.toHex(gasPrice.toString()),
       gasLimit: web3.utils.toHex(this.gas_limit),
-      chain: 'bsc-testnet',  // FIXME: must be a configurable variable
+      chain,
+      chainId,
     }
 
     return web3.eth.sendTransaction(txObj)
@@ -140,7 +146,7 @@ class EthTransfer {
         })
         .catch((reason) => {
           console.log("Reason: ", reason);
-          throw new Error(reason);
+          throw new Error(reason.message);
         });
   }
 }

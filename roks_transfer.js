@@ -4,7 +4,7 @@ const { default_http_options, default_ws_options } = require('./properties');
 const contract = require('./contract_abi');
 const nonce_helper_fn = require('./nonce_helper');
 const Web3WsProvider = require('web3-providers-ws');
-const HDWalletProvider = require("@truffle/hdwallet-provider");
+const HDWalletProvider = require("@puremoney/hdwallet-provider");
 const Big = require('big.js')
 
 class RoksTransfer {
@@ -19,7 +19,8 @@ class RoksTransfer {
       nonce_helper = null,
       http_options = default_http_options,
       ws_options = default_ws_options,
-      src_mnemonic = null
+      src_mnemonic = null,
+      chain_id = null
     ) {
     this.contract_abi = contract_abi;
     this.network_provider = network_provider;
@@ -41,6 +42,7 @@ class RoksTransfer {
     this.http_options = http_options;
     this.ws_options = ws_options;
     this.src_mnemonic = src_mnemonic;
+    this.chain_id = chain_id;
   }
 
   async init() {
@@ -87,7 +89,8 @@ class RoksTransfer {
       transaction_count,
       roks_eth_src_same,
       localNonceIncrement,
-      nonce_helper
+      nonce_helper,
+      chain_id
     } = this;
 
     console.log('Recipient: ', recipient)
@@ -139,14 +142,18 @@ class RoksTransfer {
     const gasPrice = await web3.eth.getGasPrice();
     console.log(`gas price: ${gasPrice.toString()}`)
 
+    const {chain, chainId} = (chain_id == null) ? {chain: 'bsc-mainnet', chainId: 56} : chain_id;
+
     const txObj = {
       nonce,
-      'from': roks_src_address,
-      'gasPrice': web3.utils.toHex(gasPrice.toString()),
-      'gasLimit': web3.utils.toHex(this.gas_limit),
-      "value": "0x00",
-      "data": data,
-      "to": this.contract_address
+      from: roks_src_address,
+      gasPrice: web3.utils.toHex(gasPrice.toString()),
+      gasLimit: web3.utils.toHex(this.gas_limit),
+      value: "0x00",
+      data,
+      to: this.contract_address,
+      chain,
+      chainId,
     };
 
     return web3.eth.sendTransaction(txObj)
