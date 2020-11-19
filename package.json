@@ -1,6 +1,6 @@
 {
-  "_from": "@puremoney/roks_transfer_app@2.1.23",
-  "_id": "@puremoney/roks_transfer_app@2.1.23",
+  "_from": "@puremoney/roks_transfer_app@2.2.0",
+  "_id": "@puremoney/roks_transfer_app@2.2.0",
   "_inBundle": false,
   "_integrity": "sha512-YSumubHPQq9OT0KQh8cMKArfMDxgJ4biKEJzzm0m53AiVlbqOlHoKG3gPnWVZ1HRnkhhJ9euyOOERKCsjxJjiQ==",
   "_location": "/@puremoney/roks_transfer_app",
@@ -38,21 +38,21 @@
   "_requested": {
     "type": "version",
     "registry": true,
-    "raw": "@puremoney/roks_transfer_app@2.1.23",
+    "raw": "@puremoney/roks_transfer_app@2.2.0",
     "name": "@puremoney/roks_transfer_app",
     "escapedName": "@puremoney%2froks_transfer_app",
     "scope": "@puremoney",
-    "rawSpec": "2.1.23",
+    "rawSpec": "2.2.0",
     "saveSpec": null,
-    "fetchSpec": "2.1.23"
+    "fetchSpec": "2.2.0"
   },
   "_requiredBy": [
     "#USER",
     "/"
   ],
-  "_resolved": "https://npm.pkg.github.com/download/@puremoney/roks_transfer_app/2.1.23/0ec8350c74e352c30a9940359026b8e4e444c36869dfed5122d3cb907e694391",
+  "_resolved": "https://npm.pkg.github.com/download/@puremoney/roks_transfer_app/2.2.0/0ec8350c74e352c30a9940359026b8e4e444c36869dfed5122d3cb907e694391",
   "_shasum": "4489511616e9ff036e951a7a8e3b431f22b596ab",
-  "_spec": "@puremoney/roks_transfer_app@2.1.23",
+  "_spec": "@puremoney/roks_transfer_app@2.2.0",
   "_where": "C:\\Users\\ctapa\\source\\ROKS_Remittance\\server",
   "author": "",
   "bugs": {
@@ -82,5 +82,5 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "version": "2.1.23"
+  "version": "2.2.0"
 }
