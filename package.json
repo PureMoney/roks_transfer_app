@@ -1,7 +1,7 @@
 {
-  "name": "@bcabansay/roks_transfer_app",
-  "version": "2.1.13",
-  "description": "",
+  "name": "@puremoney/roks_transfer_app",
+  "version": "2.3.001",
+  "description": "Transfer ETH and ROKS",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -10,13 +10,13 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@truffle/hdwallet-provider": "^1.1.0",
+    "@puremoney/hdwallet-provider": "^1.2.3",
     "big.js": "^6.0.1",
     "ethereumjs-tx": "^1.3.7",
-    "web3": "^1.2.9",
-    "web3-eth-contract": "^1.2.9",
-    "web3-providers-http": "^1.2.9",
-    "web3-providers-ws": "^1.2.9"
+    "web3": "^1.3.0",
+    "web3-eth-contract": "^1.3.0",
+    "web3-providers-http": "^1.3.0",
+    "web3-providers-ws": "^1.3.0"
   },
   "devDependencies": {},
   "repository": {
@@ -26,5 +26,6 @@
   "bugs": {
     "url": "https://github.com/PureMoney/roks_transfer_app/issues"
   },
+  "_resolved": "https://npm.pkg.github.com/download/@puremoney/roks_transfer_app/2.3.001/0ec8350c74e352c30a9940359026b8e4e444c36869dfed5122d3cb907e694391",
   "homepage": "https://github.com/PureMoney/roks_transfer_app#readme"
 }
